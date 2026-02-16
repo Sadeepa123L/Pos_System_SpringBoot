@@ -15,6 +15,7 @@ import lk.ijse.pos_system_backend.service.custom.OrderService;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,5 +74,12 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderDetails(orderDetailsList);
         orderRepo.save(order);
+    }
+
+    @Override
+    public List<OrderDTO> getAllOrders() {
+        List<Orders> ordersList = orderRepo.findAll();
+
+        return modelMapper.map(ordersList, new TypeToken<List<OrderDTO>>() {}.getType());
     }
 }
