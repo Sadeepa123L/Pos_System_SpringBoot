@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIResponse<String>> handleGeneralException(Exception e) {
+        e.printStackTrace();
         return new ResponseEntity<>(new APIResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal server error",
