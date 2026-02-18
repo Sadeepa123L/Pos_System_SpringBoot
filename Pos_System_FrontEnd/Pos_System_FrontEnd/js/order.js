@@ -1,10 +1,10 @@
-
 let cart =[];
 let allItems = [];
 
 $(document).ready(function (){
   loadAllCustomers();
   loadAllItems();
+  getAllOrders();
 
   let today = new Date().toISOString().split('T')[0];
   $('#txtOrderDate').val(today);
@@ -122,21 +122,19 @@ function removeFromCart(index) {
   updateCartTable();
 }
 
+
+
 function placeOrder() {
   let customerId = $('#cmbCustomerID').val();
   let orderDate = $('#txtOrderDate').val();
-
-
   if (!customerId || !orderDate) {
     alert("Please select a Customer and Order Date!");
     return;
   }
-
   if (cart.length === 0) {
     alert("Your cart is empty! Please add items first.");
     return;
   }
-
   let orderDTO = {
     orderDate: orderDate,
     customerId: customerId,
@@ -154,6 +152,7 @@ function placeOrder() {
         alert(response.message);
         cart = [];
         updateCartTable();
+        getAllOrders();
         $('#cmbCustomerID').val('');
         $('#cmbItemID').val('');
         $('#txtQty').val('');
@@ -176,6 +175,39 @@ function placeOrder() {
       } else {
         alert("Connection Error!");
       }
+    }
+  });
+}
+
+
+
+
+function getAllOrders(){
+  $.ajax({
+    method:"GET",
+    url:"http://localhost:8080/api/v1/orders/getAllOrders",
+    async: true,
+    success:function (response){
+      $('#ordersTableBody').empty();
+
+      let orders = response.data;
+
+      for(let order of orders){
+        for(let details of order.orderDetails){
+          let row = `<tr>
+                         <td>${order.orderId}</td>
+                         <td>${order.orderDate}</td>
+                         <td>${order.customerId}</td>
+                         <td>${details.itemId}</td>
+                         <td>${details.qty}</td>
+                     </tr>`;
+
+          $('#ordersTableBody').append(row);
+        }
+      }
+    },
+    error: function(xhr) {
+      console.log("Error loading all orders", xhr);
     }
   });
 }
